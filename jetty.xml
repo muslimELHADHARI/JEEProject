@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_11_0.dtd">
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
+    <!-- Configuration pour forcer UTF-8 dans les query parameters -->
+    <Call name="setAttribute">
+        <Arg>org.eclipse.jetty.util.UrlEncoding.charset</Arg>
+        <Arg>UTF-8</Arg>
+    </Call>
+</Configure>
+
