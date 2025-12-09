@@ -53,6 +53,15 @@
                 </div>
             </c:if>
             
+            <c:if test="${addedToWaitingList}">
+                <div class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 text-blue-700 rounded-lg flex items-start">
+                    <svg class="w-5 h-5 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="font-semibold">${successMessage}</span>
+                </div>
+            </c:if>
+            
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-gray-700 transition-colors duration-200">
                 <form method="post" action="${pageContext.request.contextPath}/reservations" class="space-y-6">
                     <c:if test="${reservation != null}">
@@ -61,45 +70,36 @@
                     
                     <div class="space-y-2">
                         <label for="salleId" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Salle *</label>
-                        <select id="salleId" name="salleId" required
-                                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                            <option value="">Sélectionner une salle</option>
-                            <c:forEach var="salle" items="${salles}">
-                                <option value="${salle.id}" 
-                                        ${reservation != null && reservation.salle.id == salle.id ? 'selected' : ''}>
-                                    ${salle.nom} (${salle.capacite} places)
-                                </option>
-                            </c:forEach>
-                        </select>
+                        <c:if test="${selectedSalle != null}">
+                            <input type="text" id="salleDisplay" value="${selectedSalle.nom} (${selectedSalle.capacite} places)" readonly
+                                   class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white cursor-not-allowed opacity-80">
+                            <input type="hidden" name="salleId" value="${selectedSalle.id}">
+                        </c:if>
+                        <c:if test="${selectedSalle == null}">
+                            <select id="salleId" name="salleId" required
+                                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                <option value="">Sélectionner une salle</option>
+                                <c:forEach var="salle" items="${salles}">
+                                    <option value="${salle.id}" 
+                                            ${(reservation != null && reservation.salle.id == salle.id) || (param.salleId == salle.id) ? 'selected' : ''}>
+                                        ${salle.nom} (${salle.capacite} places)
+                                    </option>
+                                </c:forEach>
+                            </select>
+                        </c:if>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div class="space-y-2">
                             <label for="dateDebut" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Date de début *</label>
                             <input type="datetime-local" id="dateDebut" name="dateDebut" required
-                                   <c:if test="${reservation != null}">
-                                       <%
-                                           DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-                                           com.salle.model.Reservation res = (com.salle.model.Reservation)request.getAttribute("reservation");
-                                           if (res != null) {
-                                               out.print("value=\"" + dateTimeFormatter.format(res.getDateDebut()) + "\"");
-                                           }
-                                       %>
-                                   </c:if>
+                                   value="<c:choose><c:when test="${not empty dateDebut}">${dateDebut}</c:when><c:when test="${reservation != null}"><fmt:formatDate value="${reservation.dateDebut}" pattern="yyyy-MM-dd'T'HH:mm"/></c:when><c:otherwise></c:otherwise></c:choose>"
                                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                         </div>
                         <div class="space-y-2">
                             <label for="dateFin" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Date de fin *</label>
                             <input type="datetime-local" id="dateFin" name="dateFin" required
-                                   <c:if test="${reservation != null}">
-                                       <%
-                                           DateTimeFormatter dateTimeFormatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-                                           com.salle.model.Reservation res2 = (com.salle.model.Reservation)request.getAttribute("reservation");
-                                           if (res2 != null) {
-                                               out.print("value=\"" + dateTimeFormatter2.format(res2.getDateFin()) + "\"");
-                                           }
-                                       %>
-                                   </c:if>
+                                   value="<c:choose><c:when test="${not empty dateFin}">${dateFin}</c:when><c:when test="${reservation != null}"><fmt:formatDate value="${reservation.dateFin}" pattern="yyyy-MM-dd'T'HH:mm"/></c:when><c:otherwise></c:otherwise></c:choose>"
                                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                         </div>
                     </div>
@@ -108,7 +108,7 @@
                         <label for="motif" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Motif</label>
                         <textarea id="motif" name="motif" rows="4"
                                   class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
-                                  placeholder="Décrivez le motif de votre réservation...">${reservation != null ? reservation.motif : ''}</textarea>
+                                  placeholder="Décrivez le motif de votre réservation..."><c:out value='${not empty motif ? motif : (reservation != null ? reservation.motif : "")}'/></textarea>
                     </div>
                     
                     <div class="flex flex-col sm:flex-row gap-4 pt-4">

@@ -15,7 +15,7 @@
                 </div>
                 <a href="${pageContext.request.contextPath}/dashboard" 
                    class="text-xl font-bold text-gray-800 dark:text-white hover:text-orange-600 dark:hover:text-orange-400 transition-colors duration-200">
-                    Gestion Salles
+                    ZangaSpace
                 </a>
             </div>
             <c:if test="${user != null}">
@@ -41,6 +41,19 @@
                         </svg>
                         <span>Réservations</span>
                     </a>
+                    
+                    <!-- Notifications Icon -->
+                    <a href="${pageContext.request.contextPath}/notifications" class="relative text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors duration-200 font-medium flex items-center space-x-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                        </svg>
+                        <c:if test="${unreadNotificationCount > 0}">
+                            <span class="absolute -top-2 -right-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
+                                ${unreadNotificationCount}
+                            </span>
+                        </c:if>
+                    </a>
+                    
                     <c:if test="${user.role == 'ADMIN'}">
                         <a href="${pageContext.request.contextPath}/admin/users" 
                            class="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors duration-200 font-medium flex items-center space-x-1">
@@ -105,6 +118,24 @@
     </nav>
 </header>
 
+<div class="container mx-auto px-6 mt-4">
+    <c:if test="${not empty param.message}">
+        <div class="mb-4 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-lg flex items-center shadow-sm">
+            <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>${param.message}</span>
+        </div>
+    </c:if>
+    <c:if test="${not empty param.error}">
+        <div class="mb-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-lg flex items-center shadow-sm">
+            <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>${param.error}</span>
+        </div>
+    </c:if>
+</div>
 <script>
     // Dark Mode Toggle Script
     (function() {

@@ -73,6 +73,10 @@
                                     <strong>Équipements:</strong> ${salle.equipements}
                                 </p>
                             </c:if>
+                            <a href="${pageContext.request.contextPath}/reservations/new?salleId=${salle.id}"
+                               class="block bg-orange-600 text-white px-4 py-2 rounded-lg text-center hover:bg-blue-700 transition-colors duration-200 font-medium mt-4">
+                                Réserver cette salle
+                            </a>
                             <c:if test="${user.role == 'ADMIN'}">
                                 <div class="flex space-x-2 mt-4">
                                     <a href="${pageContext.request.contextPath}/salles/edit/${salle.id}" 

@@ -37,15 +37,15 @@ public class DataInitializer implements ServletContextListener {
             // 3. Créer des réservations
             createReservations(userService, salleService, reservationService);
             
-            System.out.println("✅ Base de données initialisée avec succès!");
+            System.out.println("Base de données initialisée avec succès!");
         } catch (Exception e) {
-            System.err.println("❌ Erreur lors de l'initialisation: " + e.getMessage());
+            System.err.println(" Erreur lors de l'initialisation: " + e.getMessage());
             e.printStackTrace();
         }
     }
     
     private void createUsers(UserService userService) {
-        System.out.println("📝 Création des utilisateurs...");
+        System.out.println(" Création des utilisateurs...");
         
         // Admin
         if (userService.getUserByEmail("admin@salle.com").isEmpty()) {

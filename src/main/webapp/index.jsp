@@ -20,6 +20,43 @@
             darkMode: 'class',
         }
     </script>
+    <script>
+        // Dark Mode Toggle Script
+        (function() {
+            // Check for saved theme preference or default to light mode
+            const theme = localStorage.getItem('theme') || 'light';
+            const html = document.documentElement;
+            
+            // Apply theme immediately to prevent flash
+            if (theme === 'dark') {
+                html.classList.add('dark');
+            } else {
+                html.classList.remove('dark');
+            }
+            
+            // Function to toggle dark mode
+            function toggleDarkMode() {
+                const html = document.documentElement;
+                const isDark = html.classList.contains('dark');
+                
+                if (isDark) {
+                    html.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    html.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            }
+            
+            // Add event listeners to all toggle buttons
+            document.addEventListener('DOMContentLoaded', function() {
+                const toggleButtons = document.querySelectorAll('#darkModeToggle');
+                toggleButtons.forEach(button => {
+                    button.addEventListener('click', toggleDarkMode);
+                });
+            });
+        })();
+    </script>
     <script src="https://unpkg.com/heroicons@2.0.18/24/outline/index.js" type="module"></script>
     <style>
         @keyframes fadeInUp {
@@ -124,8 +161,8 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Réservation Intelligente</h3>
-                    <p class="text-gray-600 leading-relaxed">Système automatique de détection des conflits pour éviter les chevauchements de réservations.</p>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Réservation Intelligente</h3>
+                    <p class="text-gray-600 dark:text-gray-300 leading-relaxed">Système automatique de détection des conflits pour éviter les chevauchements de réservations.</p>
                 </div>
                 
                 <div class="bg-gradient-to-br from-orange-50 to-white p-8 rounded-xl border border-orange-100 hover:shadow-lg transition-shadow duration-300">
@@ -134,8 +171,8 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                         </svg>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Sécurité Avancée</h3>
-                    <p class="text-gray-600 leading-relaxed">Authentification sécurisée avec gestion des rôles et permissions pour protéger vos données.</p>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Sécurité Avancée</h3>
+                    <p class="text-gray-600 dark:text-gray-300 leading-relaxed">Authentification sécurisée avec gestion des rôles et permissions pour protéger vos données.</p>
                 </div>
             </div>
         </div>
@@ -159,7 +196,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
                         </svg>
                     </div>
-                    <p class="text-gray-700 font-semibold">Innovation</p>
+                    <p class="text-gray-700 dark:text-gray-300 font-semibold">Innovation</p>
                 </div>
                 <div class="text-center">
                     <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-3">
@@ -167,7 +204,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                         </svg>
                     </div>
-                    <p class="text-gray-700 font-semibold">Mobile</p>
+                    <p class="text-gray-700 dark:text-gray-300 font-semibold">Mobile</p>
                 </div>
                 <div class="text-center">
                     <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-3">
@@ -175,7 +212,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </div>
-                    <p class="text-gray-700 font-semibold">Fiabilité</p>
+                    <p class="text-gray-700 dark:text-gray-300 font-semibold">Fiabilité</p>
                 </div>
             </div>
         </div>
@@ -188,38 +225,5 @@
         </div>
     </footer>
     
-    <script>
-        // Dark Mode Toggle Script
-        (function() {
-            const theme = localStorage.getItem('theme') || 'light';
-            const html = document.documentElement;
-            
-            if (theme === 'dark') {
-                html.classList.add('dark');
-            } else {
-                html.classList.remove('dark');
-            }
-            
-            function toggleDarkMode() {
-                const html = document.documentElement;
-                const isDark = html.classList.contains('dark');
-                
-                if (isDark) {
-                    html.classList.remove('dark');
-                    localStorage.setItem('theme', 'light');
-                } else {
-                    html.classList.add('dark');
-                    localStorage.setItem('theme', 'dark');
-                }
-            }
-            
-            document.addEventListener('DOMContentLoaded', function() {
-                const toggleButton = document.getElementById('darkModeToggle');
-                if (toggleButton) {
-                    toggleButton.addEventListener('click', toggleDarkMode);
-                }
-            });
-        })();
-    </script>
 </body>
 </html>

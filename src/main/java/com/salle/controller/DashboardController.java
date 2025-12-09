@@ -4,6 +4,7 @@ package com.salle.controller;
 import com.salle.model.User;
 import com.salle.service.ReservationService;
 import com.salle.service.SalleService;
+import com.salle.service.NotificationService; // Import NotificationService
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -17,10 +18,12 @@ public class DashboardController extends HttpServlet {
     
     private final ReservationService reservationService;
     private final SalleService salleService;
+    private final NotificationService notificationService; // Add NotificationService
     
     public DashboardController() {
         this.reservationService = new ReservationService();
         this.salleService = new SalleService();
+        this.notificationService = new NotificationService(); // Initialize NotificationService
     }
     
     @Override
@@ -43,6 +46,9 @@ public class DashboardController extends HttpServlet {
             request.setAttribute("reservations", reservationService.getReservationsByUser(user.getId()));
             request.setAttribute("salles", salleService.getAllSalles());
         }
+        
+        // Set unread notification count
+        request.setAttribute("unreadNotificationCount", notificationService.getUnreadNotificationCountForUser(user.getId()));
         
         request.getRequestDispatcher("/WEB-INF/views/dashboard.jsp").forward(request, response);
     }

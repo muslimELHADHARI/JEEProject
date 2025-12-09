@@ -10,6 +10,8 @@
         <class>com.salle.model.User</class>
         <class>com.salle.model.Salle</class>
         <class>com.salle.model.Reservation</class>
+        <class>com.salle.model.WaitingList</class>
+        <class>com.salle.model.Notification</class>
         
         <properties>
             <!-- Database connection - File-based storage -->

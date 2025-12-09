@@ -54,6 +54,15 @@ public class ReservationController extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/views/reservations/list.jsp").forward(request, response);
         } else if (pathInfo.equals("/new")) {
             // Show create form
+            String salleIdParam = request.getParameter("salleId");
+            if (salleIdParam != null && !salleIdParam.isEmpty()) {
+                try {
+                    Long salleId = Long.parseLong(salleIdParam);
+                    salleService.getSalleById(salleId).ifPresent(salle -> request.setAttribute("selectedSalle", salle));
+                } catch (NumberFormatException e) {
+                    request.setAttribute("error", "ID de salle invalide");
+                }
+            }
             request.setAttribute("salles", salleService.getAllSalles());
             request.getRequestDispatcher("/WEB-INF/views/reservations/form.jsp").forward(request, response);
         } else if (pathInfo.startsWith("/edit/")) {
@@ -113,12 +122,13 @@ public class ReservationController extends HttpServlet {
             // Cancel reservation
             try {
                 Long id = Long.parseLong(request.getParameter("id"));
-                reservationService.cancelReservation(id, user.getId());
-                response.sendRedirect(URLHelper.buildUrlWithMessage(request.getContextPath() + "/reservations", "Réservation annulée avec succès"));
+                String message = reservationService.cancelReservation(id, user.getId());
+                response.sendRedirect(URLHelper.buildUrlWithMessage(request.getContextPath() + "/reservations", message));
             } catch (NumberFormatException e) {
                 request.setAttribute("error", "ID invalide");
                 doGet(request, response);
             } catch (UnauthorizedActionException e) {
+                // This catch block will now handle UnauthorizedActionException that are not related to auto-assignment.
                 request.setAttribute("error", e.getMessage());
                 doGet(request, response);
             }
@@ -143,6 +153,8 @@ public class ReservationController extends HttpServlet {
             String motif = request.getParameter("motif");
             String idStr = request.getParameter("id");
             
+            Long salleId = null; // Declare salleId here
+
             if (salleIdStr == null || dateDebutStr == null || dateFinStr == null ||
                 salleIdStr.trim().isEmpty() || dateDebutStr.trim().isEmpty() || dateFinStr.trim().isEmpty()) {
                 request.setAttribute("error", "Tous les champs sont requis");
@@ -152,7 +164,7 @@ public class ReservationController extends HttpServlet {
             }
             
             try {
-                Long salleId = Long.parseLong(salleIdStr);
+                salleId = Long.parseLong(salleIdStr); // Assign salleId here
                 LocalDateTime dateDebut = LocalDateTime.parse(dateDebutStr, DATETIME_FORMATTER);
                 LocalDateTime dateFin = LocalDateTime.parse(dateFinStr, DATETIME_FORMATTER);
                 
@@ -176,9 +188,29 @@ public class ReservationController extends HttpServlet {
                 request.setAttribute("error", "Format de date invalide. Utilisez: yyyy-MM-ddTHH:mm");
                 request.setAttribute("salles", salleService.getAllSalles());
                 request.getRequestDispatcher("/WEB-INF/views/reservations/form.jsp").forward(request, response);
-            } catch (OverlapException | InvalidDateException | UnauthorizedActionException e) {
+            } catch (OverlapException e) {
+                if (e.getMessage().contains("liste d\'attente")) {
+                    request.setAttribute("successMessage", e.getMessage());
+                    request.setAttribute("addedToWaitingList", true);
+                } else {
+                    request.setAttribute("error", e.getMessage());
+                }
+                request.setAttribute("salles", salleService.getAllSalles());
+                // Re-populate form fields to persist user input
+                request.setAttribute("selectedSalle", salleService.getSalleById(salleId).orElse(null));
+                request.setAttribute("dateDebut", dateDebutStr);
+                request.setAttribute("dateFin", dateFinStr);
+                request.setAttribute("motif", motif);
+
+                request.getRequestDispatcher("/WEB-INF/views/reservations/form.jsp").forward(request, response);
+            } catch (InvalidDateException | UnauthorizedActionException e) {
                 request.setAttribute("error", e.getMessage());
                 request.setAttribute("salles", salleService.getAllSalles());
+                // Re-populate form fields to persist user input
+                request.setAttribute("selectedSalle", salleService.getSalleById(salleId).orElse(null));
+                request.setAttribute("dateDebut", dateDebutStr);
+                request.setAttribute("dateFin", dateFinStr);
+                request.setAttribute("motif", motif);
                 request.getRequestDispatcher("/WEB-INF/views/reservations/form.jsp").forward(request, response);
             }
         }

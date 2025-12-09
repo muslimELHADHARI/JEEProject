@@ -41,6 +41,21 @@ public class ReservationDAO {
         }
     }
     
+    public List<Reservation> getReservationsByUserAndPeriod(Long userId, LocalDateTime dateDebut, LocalDateTime dateFin) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            TypedQuery<Reservation> query = em.createQuery(
+                "SELECT r FROM Reservation r WHERE r.user.id = :userId AND " +
+                "((r.dateDebut < :dateFin AND r.dateFin > :dateDebut))", Reservation.class);
+            query.setParameter("userId", userId);
+            query.setParameter("dateDebut", dateDebut);
+            query.setParameter("dateFin", dateFin);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+    
     public List<Reservation> findBySalle(Long salleId) {
         EntityManager em = JPAUtil.getEntityManager();
         try {
