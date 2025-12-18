@@ -20,6 +20,8 @@ public class WaitingListDAO {
             tx.begin();
             em.persist(waitingList);
             tx.commit();
+            System.out.println("DEBUG: Persisted WaitingList entry " + waitingList.getId() + " for user "
+                    + waitingList.getUser().getEmail());
         } catch (Exception e) {
             if (tx.isActive()) {
                 tx.rollback();
@@ -50,13 +52,29 @@ public class WaitingListDAO {
         }
     }
 
-    public Optional<WaitingList> getNextWaitingEntryForSalle(Long salleId, LocalDateTime dateDebut, LocalDateTime dateFin) {
+    public List<WaitingList> getAllWaitingListEntriesForSalle(Long salleId) {
         EntityManager em = JPAUtil.getEntityManager();
         try {
             TypedQuery<WaitingList> query = em.createQuery(
-                "SELECT wl FROM WaitingList wl JOIN FETCH wl.user JOIN FETCH wl.salle WHERE wl.salle.id = :salleId " +
-                "AND wl.requestedDateDebut = :dateDebut AND wl.requestedDateFin = :dateFin " +
-                "ORDER BY wl.requestTime ASC", WaitingList.class);
+                    "SELECT wl FROM WaitingList wl JOIN FETCH wl.user JOIN FETCH wl.salle WHERE wl.salle.id = :salleId ORDER BY wl.requestTime ASC",
+                    WaitingList.class);
+            query.setParameter("salleId", salleId);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public Optional<WaitingList> getNextWaitingEntryForSalle(Long salleId, LocalDateTime dateDebut,
+            LocalDateTime dateFin) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            TypedQuery<WaitingList> query = em.createQuery(
+                    "SELECT wl FROM WaitingList wl JOIN FETCH wl.user JOIN FETCH wl.salle WHERE wl.salle.id = :salleId "
+                            +
+                            "AND wl.requestedDateDebut >= :dateDebut AND wl.requestedDateFin <= :dateFin " +
+                            "ORDER BY wl.requestTime ASC",
+                    WaitingList.class);
             query.setParameter("salleId", salleId);
             query.setParameter("dateDebut", dateDebut);
             query.setParameter("dateFin", dateFin);
@@ -73,7 +91,8 @@ public class WaitingListDAO {
         EntityManager em = JPAUtil.getEntityManager();
         try {
             TypedQuery<WaitingList> query = em.createQuery(
-                "SELECT wl FROM WaitingList wl JOIN FETCH wl.user JOIN FETCH wl.salle WHERE wl.user.id = :userId ORDER BY wl.requestTime ASC", WaitingList.class);
+                    "SELECT wl FROM WaitingList wl JOIN FETCH wl.user JOIN FETCH wl.salle WHERE wl.user.id = :userId ORDER BY wl.requestTime ASC",
+                    WaitingList.class);
             query.setParameter("userId", userId);
             return query.getResultList();
         } finally {
@@ -85,7 +104,8 @@ public class WaitingListDAO {
         EntityManager em = JPAUtil.getEntityManager();
         try {
             TypedQuery<WaitingList> query = em.createQuery(
-                "SELECT wl FROM WaitingList wl JOIN FETCH wl.user JOIN FETCH wl.salle ORDER BY wl.requestTime ASC", WaitingList.class);
+                    "SELECT wl FROM WaitingList wl JOIN FETCH wl.user JOIN FETCH wl.salle ORDER BY wl.requestTime ASC",
+                    WaitingList.class);
             return query.getResultList();
         } finally {
             em.close();
@@ -97,7 +117,8 @@ public class WaitingListDAO {
         try {
             // Changed from em.find to TypedQuery to allow for JOIN FETCH
             TypedQuery<WaitingList> query = em.createQuery(
-                "SELECT wl FROM WaitingList wl JOIN FETCH wl.user JOIN FETCH wl.salle WHERE wl.id = :id", WaitingList.class);
+                    "SELECT wl FROM WaitingList wl JOIN FETCH wl.user JOIN FETCH wl.salle WHERE wl.id = :id",
+                    WaitingList.class);
             query.setParameter("id", id);
             return Optional.ofNullable(query.getSingleResult());
         } catch (NoResultException e) {
@@ -106,14 +127,17 @@ public class WaitingListDAO {
             em.close();
         }
     }
-    
-    public List<WaitingList> getWaitingListEntriesBySalleAndTime(Long salleId, LocalDateTime dateDebut, LocalDateTime dateFin) {
+
+    public List<WaitingList> getWaitingListEntriesBySalleAndTime(Long salleId, LocalDateTime dateDebut,
+            LocalDateTime dateFin) {
         EntityManager em = JPAUtil.getEntityManager();
         try {
             TypedQuery<WaitingList> query = em.createQuery(
-                "SELECT wl FROM WaitingList wl JOIN FETCH wl.user JOIN FETCH wl.salle WHERE wl.salle.id = :salleId " +
-                "AND wl.requestedDateDebut = :dateDebut AND wl.requestedDateFin = :dateFin " +
-                "ORDER BY wl.requestTime ASC", WaitingList.class);
+                    "SELECT wl FROM WaitingList wl JOIN FETCH wl.user JOIN FETCH wl.salle WHERE wl.salle.id = :salleId "
+                            +
+                            "AND wl.requestedDateDebut >= :dateDebut AND wl.requestedDateFin <= :dateFin " +
+                            "ORDER BY wl.requestTime ASC",
+                    WaitingList.class);
             query.setParameter("salleId", salleId);
             query.setParameter("dateDebut", dateDebut);
             query.setParameter("dateFin", dateFin);

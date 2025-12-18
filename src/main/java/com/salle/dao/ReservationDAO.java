@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class ReservationDAO {
-    
+
     public List<Reservation> findAll() {
         EntityManager em = JPAUtil.getEntityManager();
         try {
@@ -19,7 +19,7 @@ public class ReservationDAO {
             em.close();
         }
     }
-    
+
     public Optional<Reservation> findById(Long id) {
         EntityManager em = JPAUtil.getEntityManager();
         try {
@@ -29,7 +29,7 @@ public class ReservationDAO {
             em.close();
         }
     }
-    
+
     public List<Reservation> findByUser(Long userId) {
         EntityManager em = JPAUtil.getEntityManager();
         try {
@@ -40,13 +40,15 @@ public class ReservationDAO {
             em.close();
         }
     }
-    
-    public List<Reservation> getReservationsByUserAndPeriod(Long userId, LocalDateTime dateDebut, LocalDateTime dateFin) {
+
+    public List<Reservation> getReservationsByUserAndPeriod(Long userId, LocalDateTime dateDebut,
+            LocalDateTime dateFin) {
         EntityManager em = JPAUtil.getEntityManager();
         try {
             TypedQuery<Reservation> query = em.createQuery(
-                "SELECT r FROM Reservation r WHERE r.user.id = :userId AND " +
-                "((r.dateDebut < :dateFin AND r.dateFin > :dateDebut))", Reservation.class);
+                    "SELECT r FROM Reservation r WHERE r.user.id = :userId AND r.statut != 'ANNULEE' AND " +
+                            "((r.dateDebut < :dateFin AND r.dateFin > :dateDebut))",
+                    Reservation.class);
             query.setParameter("userId", userId);
             query.setParameter("dateDebut", dateDebut);
             query.setParameter("dateFin", dateFin);
@@ -55,7 +57,7 @@ public class ReservationDAO {
             em.close();
         }
     }
-    
+
     public List<Reservation> findBySalle(Long salleId) {
         EntityManager em = JPAUtil.getEntityManager();
         try {
@@ -66,7 +68,7 @@ public class ReservationDAO {
             em.close();
         }
     }
-    
+
     public List<Reservation> findFuture() {
         EntityManager em = JPAUtil.getEntityManager();
         try {
@@ -77,8 +79,9 @@ public class ReservationDAO {
             em.close();
         }
     }
-    
-    public List<Reservation> findOverlapping(Long salleId, LocalDateTime dateDebut, LocalDateTime dateFin, Long excludeId) {
+
+    public List<Reservation> findOverlapping(Long salleId, LocalDateTime dateDebut, LocalDateTime dateFin,
+            Long excludeId) {
         EntityManager em = JPAUtil.getEntityManager();
         try {
             TypedQuery<Reservation> query = em.createNamedQuery("Reservation.findOverlapping", Reservation.class);
@@ -91,7 +94,7 @@ public class ReservationDAO {
             em.close();
         }
     }
-    
+
     public Reservation save(Reservation reservation) {
         EntityManager em = JPAUtil.getEntityManager();
         try {
@@ -112,7 +115,7 @@ public class ReservationDAO {
             em.close();
         }
     }
-    
+
     public void delete(Long id) {
         EntityManager em = JPAUtil.getEntityManager();
         try {
@@ -132,4 +135,3 @@ public class ReservationDAO {
         }
     }
 }
-
